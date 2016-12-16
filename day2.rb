@@ -4,7 +4,7 @@
     [7,8,9]
 ]
 
-
+# From the example http://adventofcode.com/2016/day/2
 # instructions=%w(
 #   ULL
 #   RRDDD
@@ -20,9 +20,9 @@ RRRRDRLUUULLLRLDDLULRUUURRDRDRURRUURUDUULRULULRDRLRRLURDRRRULUUULRRUUULULRDDLLUU
 ULRLDLLURDRRUULRDUDDURDDDLRRRURLDRUDDLUDDDLLLRDLRLLRRUUDRRDRUULLLULULUUDRRRDRDRUUUUULRURUULULLULDULURRLURUDRDRUDRURURUDLDURUDUDDDRLRLLLLURULUDLRLDDLRUDDUUDURUULRLLLDDLLLLRRRDDLRLUDDUULRRLLRDUDLLDLRRUUULRLRDLRDUDLLLDLRULDRURDLLULLLRRRURDLLUURUDDURLDUUDLLDDRUUDULDRDRDRDDUDURLRRRRUDURLRRUDUDUURDRDULRLRLLRLUDLURUDRUDLULLULRLLULRUDDURUURDLRUULDURDRRRLLLLLUUUULUULDLDULLRURLUDLDRLRLRLRDLDRUDULDDRRDURDDULRULDRLRULDRLDLLUDLDRLRLRUDRDDR
 )
 
-@x,@y=1,1
-@x_width=@keypad[0].size
-@y_height=@keypad.sizel
+@horizontal_index,@vertical_index=1,1
+@width=@keypad[0].size
+@height=@keypad.size
 @directions=%w(L U R D)
 
 def move(coordinate, amount, max_length)
@@ -34,39 +34,39 @@ end
 
 if ARGV[0] == "test"
   # middle side
-  @x=1
-  @x=move(@x, -1, @x_width)
-  raise "#{@x} should be 0" if @x!=0
+  @horizontal_index=1
+  @horizontal_index=move(@horizontal_index, -1, @width)
+  raise "#{@horizontal_index} should be 0" if @horizontal_index!=0
 
   # left side
-  @x=0
-  @x=move(@x, -1, @x_width)
-  raise "#{@x} should be 0" if @x!=0
+  @horizontal_index=0
+  @horizontal_index=move(@horizontal_index, -1, @width)
+  raise "#{@horizontal_index} should be 0" if @horizontal_index!=0
 
   # right side
-  @x=2
-  @x=move(@x, 1, @x_width)
-  raise "#{@x} should be 0" if @x!=2
+  @horizontal_index=2
+  @horizontal_index=move(@horizontal_index, 1, @width)
+  raise "#{@horizontal_index} should be 0" if @horizontal_index!=2
 
   # top
-  @y=2
-  @x=move(@y, 1, @y_height)
-  raise "#{@y} should be 0" if @y!=2
+  @vertical_index=2
+  @horizontal_index=move(@vertical_index, 1, @height)
+  raise "#{@vertical_index} should be 0" if @vertical_index!=2
 
   # bottom
-  @y=0
-  @x=move(@y, -1, @y_height)
-  raise "#{@y} should be 0" if @y!=0
+  @vertical_index=0
+  @horizontal_index=move(@vertical_index, -1, @height)
+  raise "#{@vertical_index} should be 0" if @vertical_index!=0
 else
   instructions.each do |line|
     line.each_char do |instruction|
-      @x = move(@x, -1, @x_width) if instruction=="L"
-      @x = move(@x, 1, @x_width) if instruction=="R"
-      @y = move(@y, 1, @y_height) if instruction=="D"
-      @y = move(@y, -1, @y_height) if instruction=="U"
-      #puts "#{instruction} #{@x},#{@y}"
+      @horizontal_index = move(@horizontal_index, -1, @width) if instruction=="L"
+      @horizontal_index = move(@horizontal_index, 1, @width) if instruction=="R"
+      @vertical_index = move(@vertical_index, 1, @height) if instruction=="D"
+      @vertical_index = move(@vertical_index, -1, @height) if instruction=="U"
+      #puts "#{instruction} #{@horizontal_index},#{@vertical_index}"
     end
-    puts "DIGIT: #{@keypad[@y][@x]}"
+    puts "DIGIT: #{@keypad[@vertical_index][@horizontal_index]}"
   end
 end
 
