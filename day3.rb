@@ -1910,32 +1910,74 @@
 INPUT
 # To run it: bundle exec rails runner script/check_coverage.rb
 
+def convert_input_to_array(input)
+  triangles = []
+  input.split("\n").each do |triangle|
+    sides = triangle.split().map{|s| s.to_i}
+    triangles << sides
+  end
+  return triangles
+end
+
 def number_of_valid_triangles(input)
   valid = 0
-  triangles = input.split("\n")
-  triangles.each do |triangle|
-    sides = triangle.split().map{|s| s.to_i}
+
+  triangles = convert_input_to_array(input)
+  triangles.each do |sides|
     if ((sides[0] + sides[1]) > sides[2]) && ((sides[1] + sides[2]) > sides[0]) && ((sides[2] + sides[0]) > sides[1])
       # puts "#{sides[0]} #{sides[1]} #{sides[2]} is valid"
-      puts "#{sides} is valid"
+      # puts "#{sides} is valid"
       valid += 1
     else
       # puts "#{sides[0]} #{sides[1]} #{sides[2]} is NOT valid"
-      puts "#{sides} is not valid"
+      # puts "#{sides} is not valid"
     end
   end
   return valid
 end
 
 if ARGV[0] == "test"
-  test_input = <<-INPUT
+  test_input_part_1 = <<-INPUT
     5   10 25
     5   22 25
     1 2   3
     1 3 3
   INPUT
-  num_triangles = number_of_valid_triangles(test_input)
+  num_triangles = number_of_valid_triangles(test_input_part_1)
   raise "Number of triangles=#{num_triangles}, should=2" if num_triangles!=2
+  # [5, 10, 25] is not valid
+  # [5, 22, 25] is valid
+  # [1, 2, 3] is not valid
+  # [1, 3, 3] is valid
+  # [5, 10, 25] is not valid
+  # [25, 10, 5] is not valid
+  # [25, 5, 10] is not valid
+  # [5, 22, 25] is valid
+  # [22, 25, 5] is valid
+  # [22, 5, 25] is valid
+
+  test_input_part_2_check_what_it_should_be_using_the_old_format = <<-INPUT
+    101 102 103
+    201 202 203
+    301 302 303
+    401 402 403
+    501 502 503
+    601 602 603
+  INPUT
+  puts number_of_valid_triangles(test_input_part_2_check_what_it_should_be_using_the_old_format)
+  # this is 6
+
+  # test_input_part_2_new_format = <<-INPUT
+  #   101 301 501
+  #   102 302 502
+  #   103 303 503
+  #   201 401 601
+  #   202 402 602
+  #   203 403 603
+  # INPUT
+  #
+  # num_triangles = number_of_valid_triangles(test_input_part_2_new_format)
+  # raise "Number of triangles=#{num_triangles}, should=6" if num_triangles!=6
 
 
   invalid_with_small_number_first = "5 10 25"
@@ -1963,5 +2005,6 @@ if ARGV[0] == "test"
   raise "Number of triangles=#{num_triangles}, should=1" if num_triangles!=1
 else
   # 1609 wrong, too high
+  # 983 - right
   puts "valid: #{number_of_valid_triangles(@input)}"
 end
