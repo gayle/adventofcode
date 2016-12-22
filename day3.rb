@@ -1908,7 +1908,23 @@
 338  274  638
 346  188  656
 INPUT
-# To run it: bundle exec rails runner script/check_coverage.rb
+
+def convert_columns_to_rows(data)
+  # convert to format where each line (set of 3) is the side lengths
+  data = data.transpose
+  converted_data = []
+  data.each do |column|
+    new_row=[]
+    column.size.times do |i|
+      new_row << column[i]
+      if(i%3)==2
+        converted_data << new_row
+        new_row=[]
+      end
+    end
+  end
+  return converted_data
+end
 
 def convert_input_to_array(input)
   triangles = []
@@ -1916,6 +1932,9 @@ def convert_input_to_array(input)
     sides = triangle.split().map{|s| s.to_i}
     triangles << sides
   end
+
+  triangles = convert_columns_to_rows(triangles)
+
   return triangles
 end
 
@@ -1937,14 +1956,14 @@ def number_of_valid_triangles(input)
 end
 
 if ARGV[0] == "test"
-  test_input_part_1 = <<-INPUT
-    5   10 25
-    5   22 25
-    1 2   3
-    1 3 3
-  INPUT
-  num_triangles = number_of_valid_triangles(test_input_part_1)
-  raise "Number of triangles=#{num_triangles}, should=2" if num_triangles!=2
+  # test_input_part_1 = <<-INPUT
+  #   5   10 25
+  #   5   22 25
+  #   1 2   3
+  #   1 3 3
+  # INPUT
+  # num_triangles = number_of_valid_triangles(test_input_part_1)
+  # raise "Number of triangles=#{num_triangles}, should=2" if num_triangles!=2
   # [5, 10, 25] is not valid
   # [5, 22, 25] is valid
   # [1, 2, 3] is not valid
@@ -1956,51 +1975,51 @@ if ARGV[0] == "test"
   # [22, 25, 5] is valid
   # [22, 5, 25] is valid
 
-  test_input_part_2_check_what_it_should_be_using_the_old_format = <<-INPUT
-    101 102 103
-    201 202 203
-    301 302 303
-    401 402 403
-    501 502 503
-    601 602 603
-  INPUT
-  puts number_of_valid_triangles(test_input_part_2_check_what_it_should_be_using_the_old_format)
-  # this is 6
-
-  # test_input_part_2_new_format = <<-INPUT
-  #   101 301 501
-  #   102 302 502
-  #   103 303 503
-  #   201 401 601
-  #   202 402 602
-  #   203 403 603
+  # test_input_part_2_check_what_it_should_be_using_the_old_format = <<-INPUT
+  #   101 102 103
+  #   201 202 203
+  #   301 302 303
+  #   401 402 403
+  #   501 502 503
+  #   601 602 603
   # INPUT
-  #
-  # num_triangles = number_of_valid_triangles(test_input_part_2_new_format)
-  # raise "Number of triangles=#{num_triangles}, should=6" if num_triangles!=6
+  # puts number_of_valid_triangles(test_input_part_2_check_what_it_should_be_using_the_old_format)
+  # # this is 6
+
+  test_input_part_2_new_format = <<-INPUT
+    101 301 501
+    102 302 502
+    103 303 503
+    201 401 601
+    202 402 602
+    203 403 603
+  INPUT
+
+  num_triangles = number_of_valid_triangles(test_input_part_2_new_format)
+  raise "Number of triangles=#{num_triangles}, should=6" if num_triangles!=6
 
 
-  invalid_with_small_number_first = "5 10 25"
+  invalid_with_small_number_first = "5\n10\n25"
   num_triangles = number_of_valid_triangles(invalid_with_small_number_first)
   raise "Number of triangles=#{num_triangles}, should=0" if num_triangles!=0
 
-  invalid_with_small_number_last = "25 10 5"
+  invalid_with_small_number_last = "25\n10\n5"
   num_triangles = number_of_valid_triangles(invalid_with_small_number_last)
   raise "Number of triangles=#{num_triangles}, should=0" if num_triangles!=0
 
-  invalid_with_small_number_middle = "25 5 10"
+  invalid_with_small_number_middle = "25\n5\n10"
   num_triangles = number_of_valid_triangles(invalid_with_small_number_middle)
   raise "Number of triangles=#{num_triangles}, should=0" if num_triangles!=0
 
-  valid_with_small_number_first = "5 22 25"
+  valid_with_small_number_first = "5\n22\n25"
   num_triangles = number_of_valid_triangles(valid_with_small_number_first)
   raise "Number of triangles=#{num_triangles}, should=1" if num_triangles!=1
 
-  valid_with_small_number_last = "22 25 5"
+  valid_with_small_number_last = "22\n25\n5"
   num_triangles = number_of_valid_triangles(valid_with_small_number_last)
   raise "Number of triangles=#{num_triangles}, should=1" if num_triangles!=1
 
-  valid_with_small_number_mid = "22 5 25"
+  valid_with_small_number_mid = "22\n5\n25"
   num_triangles = number_of_valid_triangles(valid_with_small_number_mid)
   raise "Number of triangles=#{num_triangles}, should=1" if num_triangles!=1
 else
