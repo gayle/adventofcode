@@ -1176,4 +1176,5 @@ rwcnawjcrxwju-ljwmh-bqryyrwp-277[nxatm]
   puts "total=#{sum_sector_ids(@input)}"
 
   # 576119 is too high
+  # 158835 is right
 end
