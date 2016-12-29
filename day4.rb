@@ -56,6 +56,29 @@ def sum_sector_ids(input)
   sector_ids.reduce(:+)
 end
 
+def decrypt_letter(letter, sector_id)
+  letters = "abcdefghijklmnopqrstuvwxyz".split("")
+  offset = sector_id % (letters.size)
+  index = letters.find_index(letter)
+  new_index = index+offset
+  new_index -= letters.size if (new_index) >= letters.size
+  letters[new_index]
+end
+
+def decrypt_name(name, sector_id)
+  decrypted_name = ""
+  name.gsub!("-", " ")
+  chars = name.split("")
+  chars.each do |c|
+    if c == " "
+      decrypted_name << c
+    else
+      decrypted_name << decrypt_letter(c, sector_id)
+    end
+  end
+  decrypted_name
+end
+
 if ARGV[0] == "test"
   real1 = "aaaaa-bbb-z-y-x-123[abxyz]"
   real2 = "a-b-c-d-e-f-g-h-987[abcde]"
@@ -102,6 +125,20 @@ totally-real-room-200[decoy]
   total = sum_sector_ids(@input)
   raise "wrong total=#{total}" if total != 1514
 
+  decrypted_letter = decrypt_letter("a", 343)
+  raise "a: wrong decrypted letter '#{decrypted_letter}'" if decrypted_letter != 'f'
+
+  decrypted_letter = decrypt_letter("q", 343)
+  raise "q: wrong decrypted letter '#{decrypted_letter}'" if decrypted_letter != 'v'
+
+  decrypted_letter = decrypt_letter("z", 343)
+  raise "z: wrong decrypted letter '#{decrypted_letter}'" if decrypted_letter != 'e'
+
+  decrypted_letter = decrypt_letter("v", 343)
+  raise "v: wrong decrypted letter '#{decrypted_letter}'" if decrypted_letter != 'a'
+
+  decrypted_name = decrypt_name("qzmt-zixmtkozy-ivhz", 343)
+  raise "wrong decrypted name '#{decrypted_name}'" if decrypted_name != "very encrypted name"
 else
 
   @input = <<-INPUT
