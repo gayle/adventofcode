@@ -30,14 +30,11 @@ def parse_name(name)
 end
 
 def sort_chars(name)
-  puts "name=#{name}"
   name.gsub!("-","")
   chars = name.split("").uniq
   sorted_chars = chars.sort_by{|a|
-    puts "a=#{a} name.count(a)=#{name.count(a)}"
     [-name.count(a), a]
   }
-  puts sorted_chars
   sorted_chars
 end
 
@@ -48,9 +45,9 @@ end
 def is_real?(parsed_input)
   name = parsed_input[:name]
   sorted_chars = sort_chars(name)
-
+  first_chars = first_five(sorted_chars)
   checksum = parsed_input[:checksum]
-  true
+  return first_chars == checksum
 end
 
 if ARGV[0] == "test"
@@ -83,11 +80,11 @@ if ARGV[0] == "test"
   raise "#{first_five_sorted_chars} should be oarell" if first_five_sorted_chars != 'oarel'
   raise "should be true" if is_real?(parsed_real3) != true
 
-  # parsed_decoy1 = parse_name(decoy1)
-  # raise "wrong name '#{parsed_decoy1[:name]}'" if parsed_decoy1[:name]!="totally-real-room"
-  # raise "wrong sector id '#{parsed_decoy1[:sector_id]}'" if parsed_decoy1[:sector_id]!="200"
-  # raise "wrong checksum '#{parsed_decoy1[:checksum]}'" if parsed_decoy1[:checksum]!="decoy"
-  # raise "should be false" if is_real?(parsed_decoy1) != false
+  parsed_decoy1 = parse_name(decoy1)
+  raise "wrong name '#{parsed_decoy1[:name]}'" if parsed_decoy1[:name]!="totally-real-room"
+  raise "wrong sector id '#{parsed_decoy1[:sector_id]}'" if parsed_decoy1[:sector_id]!="200"
+  raise "wrong checksum '#{parsed_decoy1[:checksum]}'" if parsed_decoy1[:checksum]!="decoy"
+  raise "should be false" if is_real?(parsed_decoy1) != false
 
 else
 end
