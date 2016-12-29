@@ -19,21 +19,36 @@
 # Of the real rooms from the list above, the sum of their sector IDs is 1514.
 #
 # What is the sum of the sector IDs of the real rooms?
+#
+# --- Part Two ---
+#
+# With all the decoy data out of the way, it's time to decrypt this list and get moving.
+#
+# The room names are encrypted by a state-of-the-art shift cipher, which is nearly unbreakable without the right
+# software. However, the information kiosk designers at Easter Bunny HQ were not expecting to deal with a master
+# cryptographer like yourself.
+#
+# To decrypt a room name, rotate each letter forward through the alphabet a number of times equal to the room's
+# sector ID. A becomes B, B becomes C, Z becomes A, and so on. Dashes become spaces.
+
+def parse_input(input)
+  input.split("\n").map{|name| parse_name(name) }
+end
 
 def parse_name(name)
   name_parts = {}
   split_name = name.split(/(.*)-(\d+)\[(.*)\]/)
   name_parts[:name]=split_name[1]
-  name_parts[:sector_id]=split_name[2]
+  name_parts[:sector_id]=split_name[2].to_i
   name_parts[:checksum]=split_name[3]
   name_parts
 end
 
 def sort_chars(name)
-  name.gsub!("-","")
-  chars = name.split("").uniq
+  stripped_name = name.gsub("-","")
+  chars = stripped_name.split("").uniq
   sorted_chars = chars.sort_by{|a|
-    [-name.count(a), a]
+    [-stripped_name.count(a), a]
   }
   sorted_chars
 end
@@ -50,8 +65,7 @@ def is_real?(parsed_input)
   return first_chars == checksum
 end
 
-def sum_sector_ids(input)
-  parsed_input = input.split("\n").map{|name| parse_name(name) }
+def sum_sector_ids(parsed_input)
   sector_ids = parsed_input.select{|pi| is_real?(pi)}.map{|data| data[:sector_id].to_i }
   sector_ids.reduce(:+)
 end
@@ -79,6 +93,13 @@ def decrypt_name(name, sector_id)
   decrypted_name
 end
 
+def print_decrypted_names(parsed_input)
+  parsed_input.each do |i|
+    decrypted_name = decrypt_name(i[:name], i[:sector_id])
+    puts "#{i[:sector_id]}: #{decrypted_name}" # if decrypted_name.include? "storage"
+  end
+end
+
 if ARGV[0] == "test"
   real1 = "aaaaa-bbb-z-y-x-123[abxyz]"
   real2 = "a-b-c-d-e-f-g-h-987[abcde]"
@@ -87,7 +108,7 @@ if ARGV[0] == "test"
 
   parsed_real1 = parse_name(real1)
   raise "wrong name '#{parsed_real1[:name]}'" if parsed_real1[:name]!="aaaaa-bbb-z-y-x"
-  raise "wrong sector id '#{parsed_real1[:sector_id]}'" if parsed_real1[:sector_id]!="123"
+  raise "wrong sector id '#{parsed_real1[:sector_id]}'" if parsed_real1[:sector_id]!=123
   raise "wrong checksum '#{parsed_real1[:checksum]}'" if parsed_real1[:checksum]!="abxyz"
   first_five_sorted_chars = first_five(sort_chars(parsed_real1[:name]))
   raise "#{first_five_sorted_chars} should be abxyz" if first_five_sorted_chars != 'abxyz'
@@ -95,7 +116,7 @@ if ARGV[0] == "test"
 
   parsed_real2 = parse_name(real2)
   raise "wrong name '#{parsed_real2[:name]}'" if parsed_real2[:name]!="a-b-c-d-e-f-g-h"
-  raise "wrong sector id '#{parsed_real2[:sector_id]}'" if parsed_real2[:sector_id]!="987"
+  raise "wrong sector id '#{parsed_real2[:sector_id]}'" if parsed_real2[:sector_id]!=987
   raise "wrong checksum '#{parsed_real2[:checksum]}'" if parsed_real2[:checksum]!="abcde"
   first_five_sorted_chars = first_five(sort_chars(parsed_real2[:name]))
   raise "#{first_five_sorted_chars} should be abcde" if first_five_sorted_chars != 'abcde'
@@ -103,7 +124,7 @@ if ARGV[0] == "test"
 
   parsed_real3 = parse_name(real3)
   raise "wrong name '#{parsed_real3[:name]}'" if parsed_real3[:name]!="not-a-real-room"
-  raise "wrong sector id '#{parsed_real3[:sector_id]}'" if parsed_real3[:sector_id]!="404"
+  raise "wrong sector id '#{parsed_real3[:sector_id]}'" if parsed_real3[:sector_id]!=404
   raise "wrong checksum '#{parsed_real3[:checksum]}'" if parsed_real3[:checksum]!="oarel"
   first_five_sorted_chars = first_five(sort_chars(parsed_real3[:name]))
   raise "#{first_five_sorted_chars} should be oarell" if first_five_sorted_chars != 'oarel'
@@ -111,7 +132,7 @@ if ARGV[0] == "test"
 
   parsed_decoy1 = parse_name(decoy1)
   raise "wrong name '#{parsed_decoy1[:name]}'" if parsed_decoy1[:name]!="totally-real-room"
-  raise "wrong sector id '#{parsed_decoy1[:sector_id]}'" if parsed_decoy1[:sector_id]!="200"
+  raise "wrong sector id '#{parsed_decoy1[:sector_id]}'" if parsed_decoy1[:sector_id]!=200
   raise "wrong checksum '#{parsed_decoy1[:checksum]}'" if parsed_decoy1[:checksum]!="decoy"
   raise "should be false" if is_real?(parsed_decoy1) != false
 
@@ -122,7 +143,9 @@ not-a-real-room-404[oarel]
 totally-real-room-200[decoy]
   INPUT
 
-  total = sum_sector_ids(@input)
+  parsed_input = parse_input(@input)
+
+  total = sum_sector_ids(parsed_input)
   raise "wrong total=#{total}" if total != 1514
 
   decrypted_letter = decrypt_letter("a", 343)
@@ -1210,8 +1233,14 @@ fydelmwp-mfyyj-hzcvdsza-769[anbml]
 rwcnawjcrxwju-ljwmh-bqryyrwp-277[nxatm]
   INPUT
 
-  puts "total=#{sum_sector_ids(@input)}"
+  parsed_input = parse_input(@input)
 
+  # part 1
+  puts "total=#{sum_sector_ids(parsed_input)}"
   # 576119 is too high
   # 158835 is right
+
+  # part 2
+  print_decrypted_names(parsed_input)
+  # 993 is right
 end
